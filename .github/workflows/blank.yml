@@ -12,11 +12,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-
       - name: Bash test
         run: |
-          for i in `seq 1 20`
+          for i in `seq 1 100`
           do
               echo $i
               echo stderr $i >&2
@@ -24,8 +22,76 @@ jobs:
 
       - name: Bash with 'stdbuf -i0 -o0 -e0'
         run: |
-          stdbuf -i0 -o0 -e0 bash -c 'for i in `seq 1 20`
+          stdbuf -i0 -o0 -e0 bash -c '
+            for i in `seq 1 100`
             do
                 echo $i
                 echo stderr $i >&2
-            done'
+            done
+          '
+            
+      - name: Setup Python
+        uses: actions/setup-python@v2.2.1
+            
+      - name: Python test
+        run: |
+          python -c '
+            import sys
+            for i in range(100):
+                print(i)
+                print(f'stderr {i}', file=sys.stderr)
+          '    
+          
+      - name: Python test with Unbuffered - stdout
+        run: |
+          python -c '
+            import sys
+            
+            class Unbuffered:
+              def __init__(self, stream):  # type: ignore
+                  self.stream = stream
+
+              def write(self, data):  # type: ignore
+                  self.stream.write(data)
+                  self.stream.flush()
+
+              def writelines(self, datas):  # type: ignore
+                  self.stream.writelines(datas)
+                  self.stream.flush()
+
+              def __getattr__(self, attr):  # type: ignore
+                  return getattr(self.stream, attr)
+            
+            sys.stdout = Unbuffered(sys.stdout)
+
+            for i in range(100):
+                print(i)
+                print(f'stderr {i}', file=sys.stderr)
+          '
+      - name: Python test with Unbuffered - stdout & stderr
+        run: |
+          python -c '
+            import sys
+            
+            class Unbuffered:
+              def __init__(self, stream):  # type: ignore
+                  self.stream = stream
+
+              def write(self, data):  # type: ignore
+                  self.stream.write(data)
+                  self.stream.flush()
+
+              def writelines(self, datas):  # type: ignore
+                  self.stream.writelines(datas)
+                  self.stream.flush()
+
+              def __getattr__(self, attr):  # type: ignore
+                  return getattr(self.stream, attr)
+            
+            sys.stdout = Unbuffered(sys.stdout)
+            sys.stderr = Unbuffered(sys.stderr)
+
+            for i in range(100):
+                print(i)
+                print(f'stderr {i}', file=sys.stderr)
+          '
