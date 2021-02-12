@@ -95,3 +95,32 @@ jobs:
               print(i)
               print(f"stderr {i}", file=sys.stderr)
           '
+
+      - name: Python test with stream.write and Unbuffered - stdout & stderr
+        # perhaps print() is the issue? let's try with `write` directly.
+        run: |
+          python -c '
+          import sys
+
+          class Unbuffered:
+            def __init__(self, stream):  # type: ignore
+                self.stream = stream
+
+            def write(self, data):  # type: ignore
+                self.stream.write(data)
+                self.stream.flush()
+
+            def writelines(self, datas):  # type: ignore
+                self.stream.writelines(datas)
+                self.stream.flush()
+
+            def __getattr__(self, attr):  # type: ignore
+                return getattr(self.stream, attr)
+
+          sys.stdout = Unbuffered(sys.stdout)
+          sys.stderr = Unbuffered(sys.stderr)
+
+          for i in range(100):
+              sys.stdout.write(f"{i}\n")
+              sys.stderr.write(f"stderr {i}")
+          '
