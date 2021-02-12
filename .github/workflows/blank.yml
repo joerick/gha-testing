@@ -122,5 +122,5 @@ jobs:
 
           for i in range(100):
               sys.stdout.write(f"{i}\n")
-              sys.stderr.write(f"stderr {i}")
+              sys.stderr.write(f"stderr {i}\n")
           '
