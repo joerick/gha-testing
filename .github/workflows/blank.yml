@@ -22,9 +22,9 @@ jobs:
               echo stderr $i >&2
           done
 
-      - name: Bash with unbuffer test
+      - name: Bash with 'stdbuf -i0 -o0 -e0'
         run: |
-          unbuffer bash -c 'for i in `seq 1 20`
+          stdbuf -i0 -o0 -e0 bash -c 'for i in `seq 1 20`
             do
                 echo $i
                 echo stderr $i >&2
