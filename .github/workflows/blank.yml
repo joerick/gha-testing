@@ -14,10 +14,18 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Run a multi-line script
+      - name: Bash test
         run: |
-          for i in `seq 1 100`
+          for i in `seq 1 20`
           do
               echo $i
               echo stderr $i >&2
           done
+
+      - name: Bash with unbuffer test
+        run: |
+          unbuffer bash -c 'for i in `seq 1 20`
+            do
+                echo $i
+                echo stderr $i >&2
+            done'
