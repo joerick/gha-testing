@@ -36,62 +36,62 @@ jobs:
       - name: Python test
         run: |
           python -c '
-            import sys
-            for i in range(100):
-                print(i)
-                print(f'stderr {i}', file=sys.stderr)
+          import sys
+          for i in range(100):
+              print(i)
+              print(f'stderr {i}', file=sys.stderr)
           '    
           
       - name: Python test with Unbuffered - stdout
         run: |
           python -c '
-            import sys
-            
-            class Unbuffered:
-              def __init__(self, stream):  # type: ignore
-                  self.stream = stream
+          import sys
 
-              def write(self, data):  # type: ignore
-                  self.stream.write(data)
-                  self.stream.flush()
+          class Unbuffered:
+            def __init__(self, stream):  # type: ignore
+                self.stream = stream
 
-              def writelines(self, datas):  # type: ignore
-                  self.stream.writelines(datas)
-                  self.stream.flush()
+            def write(self, data):  # type: ignore
+                self.stream.write(data)
+                self.stream.flush()
 
-              def __getattr__(self, attr):  # type: ignore
-                  return getattr(self.stream, attr)
-            
-            sys.stdout = Unbuffered(sys.stdout)
+            def writelines(self, datas):  # type: ignore
+                self.stream.writelines(datas)
+                self.stream.flush()
 
-            for i in range(100):
-                print(i)
-                print(f'stderr {i}', file=sys.stderr)
+            def __getattr__(self, attr):  # type: ignore
+                return getattr(self.stream, attr)
+
+          sys.stdout = Unbuffered(sys.stdout)
+
+          for i in range(100):
+              print(i)
+              print(f'stderr {i}', file=sys.stderr)
           '
       - name: Python test with Unbuffered - stdout & stderr
         run: |
           python -c '
-            import sys
-            
-            class Unbuffered:
-              def __init__(self, stream):  # type: ignore
-                  self.stream = stream
+          import sys
 
-              def write(self, data):  # type: ignore
-                  self.stream.write(data)
-                  self.stream.flush()
+          class Unbuffered:
+            def __init__(self, stream):  # type: ignore
+                self.stream = stream
 
-              def writelines(self, datas):  # type: ignore
-                  self.stream.writelines(datas)
-                  self.stream.flush()
+            def write(self, data):  # type: ignore
+                self.stream.write(data)
+                self.stream.flush()
 
-              def __getattr__(self, attr):  # type: ignore
-                  return getattr(self.stream, attr)
-            
-            sys.stdout = Unbuffered(sys.stdout)
-            sys.stderr = Unbuffered(sys.stderr)
+            def writelines(self, datas):  # type: ignore
+                self.stream.writelines(datas)
+                self.stream.flush()
 
-            for i in range(100):
-                print(i)
-                print(f'stderr {i}', file=sys.stderr)
+            def __getattr__(self, attr):  # type: ignore
+                return getattr(self.stream, attr)
+
+          sys.stdout = Unbuffered(sys.stdout)
+          sys.stderr = Unbuffered(sys.stderr)
+
+          for i in range(100):
+              print(i)
+              print(f'stderr {i}', file=sys.stderr)
           '
